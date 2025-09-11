@@ -4,23 +4,6 @@
 import { cn } from "@/lib/utils";
 import { useEffect, useRef, useState } from "react";
 
-interface BackgroundGradientAnimationProps {
-  gradientBackgroundStart?: string;
-  gradientBackgroundEnd?: string;
-  firstColor?: string;
-  secondColor?: string;
-  thirdColor?: string;
-  fourthColor?: string;
-  fifthColor?: string;
-  pointerColor?: string;
-  size?: string;
-  blendingValue?: string;
-  children?: React.ReactNode;
-  className?: string;
-  interactive?: boolean;
-  containerClassName?: string;
-}
-
 export const BackgroundGradientAnimation = ({
   gradientBackgroundStart = "rgb(108, 0, 162)",
   gradientBackgroundEnd = "rgb(0, 17, 82)",
@@ -36,51 +19,69 @@ export const BackgroundGradientAnimation = ({
   className,
   interactive = true,
   containerClassName,
-}: BackgroundGradientAnimationProps) => {
+}: {
+  gradientBackgroundStart?: string;
+  gradientBackgroundEnd?: string;
+  firstColor?: string;
+  secondColor?: string;
+  thirdColor?: string;
+  fourthColor?: string;
+  fifthColor?: string;
+  pointerColor?: string;
+  size?: string;
+  blendingValue?: string;
+  children?: React.ReactNode;
+  className?: string;
+  interactive?: boolean;
+  containerClassName?: string;
+}) => {
   const interactiveRef = useRef<HTMLDivElement>(null);
 
   const [curX, setCurX] = useState(0);
   const [curY, setCurY] = useState(0);
   const [tgX, setTgX] = useState(0);
   const [tgY, setTgY] = useState(0);
-  const [isSafari, setIsSafari] = useState(false);
 
-  // ✅ Inject CSS variables safely
+  // ✅ Hydration guard
+  const [mounted, setMounted] = useState(false);
   useEffect(() => {
-    if (typeof document === "undefined") return;
-
-    const vars: Record<string, string> = {
-      "--gradient-background-start": gradientBackgroundStart,
-      "--gradient-background-end": gradientBackgroundEnd,
-      "--first-color": firstColor,
-      "--second-color": secondColor,
-      "--third-color": thirdColor,
-      "--fourth-color": fourthColor,
-      "--fifth-color": fifthColor,
-      "--pointer-color": pointerColor,
-      "--size": size,
-      "--blending-value": blendingValue,
-    };
-
-    Object.entries(vars).forEach(([key, value]) => {
-      document.body.style.setProperty(key, value);
-    });
+    setMounted(true);
   }, []);
+
+  // ✅ Only set CSS vars in the browser
+  useEffect(() => {
+    if (!mounted) return;
+    const body = document.body;
+    body.style.setProperty(
+      "--gradient-background-start",
+      gradientBackgroundStart
+    );
+    body.style.setProperty("--gradient-background-end", gradientBackgroundEnd);
+    body.style.setProperty("--first-color", firstColor);
+    body.style.setProperty("--second-color", secondColor);
+    body.style.setProperty("--third-color", thirdColor);
+    body.style.setProperty("--fourth-color", fourthColor);
+    body.style.setProperty("--fifth-color", fifthColor);
+    body.style.setProperty("--pointer-color", pointerColor);
+    body.style.setProperty("--size", size);
+    body.style.setProperty("--blending-value", blendingValue);
+  }, [mounted]);
 
   // ✅ Smooth pointer animation
   useEffect(() => {
+    if (!mounted) return;
     if (!interactiveRef.current) return;
 
     const move = () => {
-      setCurX((prevX) => prevX + (tgX - prevX) / 20);
-      setCurY((prevY) => prevY + (tgY - prevY) / 20);
+      setCurX(curX + (tgX - curX) / 20);
+      setCurY(curY + (tgY - curY) / 20);
       interactiveRef.current!.style.transform = `translate(${Math.round(
         curX
       )}px, ${Math.round(curY)}px)`;
     };
 
     move();
-  }, [tgX, tgY]);
+  }, [tgX, tgY, curX, curY, mounted]);
 
   const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
     if (!interactiveRef.current) return;
@@ -89,22 +90,25 @@ export const BackgroundGradientAnimation = ({
     setTgY(event.clientY - rect.top);
   };
 
-  // ✅ Detect Safari only in browser
+  // ✅ Detect Safari safely
+  const [isSafari, setIsSafari] = useState(false);
   useEffect(() => {
+    if (!mounted) return;
     if (typeof navigator !== "undefined") {
       setIsSafari(/^((?!chrome|android).)*safari/i.test(navigator.userAgent));
     }
-  }, []);
+  }, [mounted]);
+
+  // 🚫 Don’t render on server (prevents "document is not defined")
+  if (!mounted) return null;
 
   return (
     <div
       className={cn(
-        "w-full h-full absolute overflow-hidden top-0 left-0",
-        "bg-[linear-gradient(40deg,var(--gradient-background-start),var(--gradient-background-end))]",
+        "w-full h-full absolute overflow-hidden top-0 left-0 bg-[linear-gradient(40deg,var(--gradient-background-start),var(--gradient-background-end))]",
         containerClassName
       )}
     >
-      {/* Blur Filter */}
       <svg className="hidden">
         <defs>
           <filter id="blurMe">
@@ -116,10 +120,7 @@ export const BackgroundGradientAnimation = ({
             <feColorMatrix
               in="blur"
               mode="matrix"
-              values="1 0 0 0 0  
-                      0 1 0 0 0  
-                      0 0 1 0 0  
-                      0 0 0 18 -8"
+              values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -8"
               result="goo"
             />
             <feBlend in="SourceGraphic" in2="goo" />
@@ -127,65 +128,26 @@ export const BackgroundGradientAnimation = ({
         </defs>
       </svg>
 
-      {/* Children */}
       <div className={cn("", className)}>{children}</div>
 
-      {/* Animated Gradients */}
       <div
         className={cn(
           "gradients-container h-full w-full blur-lg",
           isSafari ? "blur-2xl" : "[filter:url(#blurMe)_blur(40px)]"
         )}
       >
-        {[
-          {
-            color: "--first-color",
-            anim: "animate-first",
-            opacity: "opacity-100",
-          },
-          {
-            color: "--second-color",
-            anim: "animate-second",
-            opacity: "opacity-100",
-          },
-          {
-            color: "--third-color",
-            anim: "animate-third",
-            opacity: "opacity-100",
-          },
-          {
-            color: "--fourth-color",
-            anim: "animate-fourth",
-            opacity: "opacity-70",
-          },
-          {
-            color: "--fifth-color",
-            anim: "animate-fifth",
-            opacity: "opacity-100",
-          },
-        ].map(({ color, anim, opacity }, i) => (
-          <div
-            key={i}
-            className={cn(
-              `absolute [background:radial-gradient(circle_at_center,_rgba(var(${color}),_0.8)_0,_rgba(var(${color}),_0)_50%)_no-repeat]`,
-              `[mix-blend-mode:var(--blending-value)] w-[var(--size)] h-[var(--size)]`,
-              `top-[calc(50%-var(--size)/2)] left-[calc(50%-var(--size)/2)]`,
-              anim,
-              opacity
-            )}
-          />
-        ))}
+        <div className="absolute animate-first opacity-100 [background:radial-gradient(circle_at_center,_var(--first-color)_0,_var(--first-color)_50%)_no-repeat] [mix-blend-mode:var(--blending-value)] w-[var(--size)] h-[var(--size)] top-[calc(50%-var(--size)/2)] left-[calc(50%-var(--size)/2)]"></div>
+        <div className="absolute animate-second opacity-100 [background:radial-gradient(circle_at_center,_rgba(var(--second-color),_0.8)_0,_rgba(var(--second-color),_0)_50%)_no-repeat] [mix-blend-mode:var(--blending-value)] w-[var(--size)] h-[var(--size)] top-[calc(50%-var(--size)/2)] left-[calc(50%-var(--size)/2)]"></div>
+        <div className="absolute animate-third opacity-100 [background:radial-gradient(circle_at_center,_rgba(var(--third-color),_0.8)_0,_rgba(var(--third-color),_0)_50%)_no-repeat] [mix-blend-mode:var(--blending-value)] w-[var(--size)] h-[var(--size)] top-[calc(50%-var(--size)/2)] left-[calc(50%-var(--size)/2)]"></div>
+        <div className="absolute animate-fourth opacity-70 [background:radial-gradient(circle_at_center,_rgba(var(--fourth-color),_0.8)_0,_rgba(var(--fourth-color),_0)_50%)_no-repeat] [mix-blend-mode:var(--blending-value)] w-[var(--size)] h-[var(--size)] top-[calc(50%-var(--size)/2)] left-[calc(50%-var(--size)/2)]"></div>
+        <div className="absolute animate-fifth opacity-100 [background:radial-gradient(circle_at_center,_rgba(var(--fifth-color),_0.8)_0,_rgba(var(--fifth-color),_0)_50%)_no-repeat] [mix-blend-mode:var(--blending-value)] w-[var(--size)] h-[var(--size)] top-[calc(50%-var(--size)/2)] left-[calc(50%-var(--size)/2)]"></div>
 
-        {/* Pointer Effect */}
         {interactive && (
           <div
             ref={interactiveRef}
             onMouseMove={handleMouseMove}
-            className={cn(
-              `absolute [background:radial-gradient(circle_at_center,_rgba(var(--pointer-color),_0.8)_0,_rgba(var(--pointer-color),_0)_50%)_no-repeat]`,
-              `[mix-blend-mode:var(--blending-value)] w-full h-full -top-1/2 -left-1/2 opacity-70`
-            )}
-          />
+            className="absolute opacity-70 [background:radial-gradient(circle_at_center,_rgba(var(--pointer-color),_0.8)_0,_rgba(var(--pointer-color),_0)_50%)_no-repeat] [mix-blend-mode:var(--blending-value)] w-full h-full -top-1/2 -left-1/2"
+          ></div>
         )}
       </div>
     </div>
