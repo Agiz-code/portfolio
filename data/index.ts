@@ -159,28 +159,28 @@ export const workExperience = [
   {
     id: 1,
     title: "Frontend Engineer Intern",
-    desc: "Assisted in the development of a web-based platform using React.js, enhancing interactivity.",
+    desc: "Assisted in developing a web-based platform using React.js, improving interactivity and user experience.",
     className: "md:col-span-2",
     thumbnail: "/exp1.svg",
   },
   {
     id: 2,
-    title: "Mobile App Dev - Agiz Tech",
-    desc: "Designed and developed mobile app for Android platforms using React Native.",
+    title: "Mobile App Dev - F-Buddy",
+    desc: "Designed and developed a mobile application for Android using React Native, ensuring smooth performance and modern UI.",
     className: "md:col-span-2", // change to md:col-span-2
     thumbnail: "/exp2.svg",
   },
   {
     id: 3,
     title: "Freelance App Dev Project",
-    desc: "Led the dev of a mobile app for a client, from initial concept to deployment on app stores.",
+    desc: "Led the end-to-end development of a custom mobile app for a client covering initial concept, design, coding, and deployment on app stores.",
     className: "md:col-span-2", // change to md:col-span-2
     thumbnail: "/exp3.svg",
   },
   {
     id: 4,
     title: "Lead Frontend Developer",
-    desc: "Developed and maintained user-facing features using modern frontend technologies.",
+    desc: "Built and maintained user-facing features using modern frontend technologies; Collaborated with cross-functional teams to deliver high-quality, scalable solutions.",
     className: "md:col-span-2",
     thumbnail: "/exp4.svg",
   },

@@ -58,7 +58,7 @@ const Hero = () => {
           />
 
           <p className="text-center md:tracking-wider mb-4 text-sm md:text-lg lg:text-2xl">
-            Hi! I&apos;m Adima Paul, a passionate Next.js developer based in
+            Hi! I&apos;m Adima Paul, a passionate Next.js, Python, React.js and Javascript developer based in
             Nigeria.
           </p>
 
