@@ -1,8 +1,9 @@
 /* eslint-disable @next/next/no-img-element */
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import { cn } from "@/lib/utils";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 export const InfiniteMovingCards = ({
   items,
@@ -11,44 +12,52 @@ export const InfiniteMovingCards = ({
   pauseOnHover = true,
   className,
 }: {
-  items: { quote: string; name: string; title: string }[];
+  items: {
+    quote: string;
+    name: string;
+    title: string;
+    img: string; // ✅ added img field
+  }[];
   direction?: "left" | "right";
   speed?: "fast" | "normal" | "slow";
   pauseOnHover?: boolean;
   className?: string;
 }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const scrollerRef = useRef<HTMLUListElement>(null);
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const scrollerRef = React.useRef<HTMLUListElement>(null);
 
   const [start, setStart] = useState(false);
-  const [mounted, setMounted] = useState(false);
 
-  // ✅ Only run in browser
   useEffect(() => {
-    setMounted(true);
+    addAnimation();
+  }, []);
 
+  function addAnimation() {
     if (containerRef.current && scrollerRef.current) {
       const scrollerContent = Array.from(scrollerRef.current.children);
 
-      // Duplicate children for infinite scroll effect
       scrollerContent.forEach((item) => {
         const duplicatedItem = item.cloneNode(true);
         scrollerRef.current?.appendChild(duplicatedItem);
       });
 
-      // Set CSS variables safely
-      if (direction === "left") {
-        containerRef.current.style.setProperty(
-          "--animation-direction",
-          "forwards"
-        );
-      } else {
-        containerRef.current.style.setProperty(
-          "--animation-direction",
-          "reverse"
-        );
-      }
+      getDirection();
+      getSpeed();
+      setStart(true);
+    }
+  }
 
+  const getDirection = () => {
+    if (containerRef.current) {
+      containerRef.current.style.setProperty(
+        "--animation-direction",
+        direction === "left" ? "forwards" : "reverse"
+      );
+    }
+  };
+
+  const getSpeed = () => {
+    if (containerRef.current) {
       if (speed === "fast") {
         containerRef.current.style.setProperty("--animation-duration", "20s");
       } else if (speed === "normal") {
@@ -56,13 +65,8 @@ export const InfiniteMovingCards = ({
       } else {
         containerRef.current.style.setProperty("--animation-duration", "80s");
       }
-
-      setStart(true);
     }
-  }, [direction, speed]);
-
-  // ✅ Prevent server from rendering until mounted
-  if (!mounted) return null;
+  };
 
   return (
     <div
@@ -83,9 +87,11 @@ export const InfiniteMovingCards = ({
         {items.map((item, idx) => (
           <li
             key={idx}
-            className="w-[90vw] max-w-full relative rounded-2xl border border-b-0 flex-shrink-0 border-slate-800 p-5 md:p-16 md:w-[60vw]"
+            className="w-[90vw] max-w-full relative rounded-2xl border border-b-0
+             flex-shrink-0 border-slate-800 p-5 md:p-16 md:w-[60vw]"
             style={{
-              background:
+              background: "rgb(4,7,29)",
+              backgroundColor:
                 "linear-gradient(90deg, rgba(4,7,29,1) 0%, rgba(12,14,35,1) 100%)",
             }}
           >
@@ -95,7 +101,12 @@ export const InfiniteMovingCards = ({
               </span>
               <div className="relative z-20 mt-6 flex flex-row items-center">
                 <div className="me-3">
-                  <img src="/profile.svg" alt="profile" />
+                  {/* ✅ Use img from testimonials */}
+                  <img
+                    src={item.img}
+                    alt={item.name}
+                    className="w-10 h-10 rounded-full object-cover"
+                  />
                 </div>
                 <span className="flex flex-col gap-1">
                   <span className="text-xl font-bold leading-[1.6] text-white">

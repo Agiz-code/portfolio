@@ -95,30 +95,35 @@ export const testimonials = [
       "Partnering with Adima Paul was seamless from day one. His ability to quickly understand our vision and translate it into a functional, polished solution exceeded expectations. The project was delivered on time, with exceptional quality and attention to detail. I’d highly recommend Adima to anyone looking to bring their digital ideas to life.",
     name: "Michael Johnson",
     title: "Director of AlphaStream Technologies",
+    img: "/avatars/michael.jpg", // ✅ new
   },
   {
     quote:
       "Adima Paul consistently demonstrated professionalism, adaptability, and strong problem-solving skills. His proactive approach and collaborative spirit made him a valuable member of our team. He not only delivered high-quality work but also inspired those around him to push for excellence.",
     name: "Laura Chen",
     title: "Engineering Manager, TechCore Labs",
+    img: "/avatars/laura.jpg", // ✅ new
   },
   {
     quote:
       "It’s rare to come across someone as motivated and detail-oriented as Adima Paul. His enthusiasm for tackling complex challenges, combined with his willingness to support teammates, made working together both productive and enjoyable. Any team would be lucky to have him.",
     name: "David Miller",
     title: "Software Engineer, InnovateX",
+    img: "/avatars/david.jpg", // ✅ new
   },
   {
     quote:
       "What sets Adima Paul apart is his eagerness to learn and ability to quickly apply new knowledge in practical ways. His dedication to continuous improvement and commitment to delivering impact make him a standout professional with enormous potential for growth.",
     name: "Sophia Rodriguez",
     title: "Senior Advisor, Digital Solutions Group",
+    img: "/avatars/sophia.jpg", // ✅ new
   },
   {
     quote:
       "Working with Adima Paul was an outstanding experience. His technical expertise, creativity, and clear communication ensured our project not only met but exceeded expectations. Adima’s dedication to excellence and his ability to deliver under tight deadlines make him an invaluable asset to any organization or project.",
     name: "Rachel Thompson",
     title: "Founder & CEO, BrightWave Media",
+    img: "/avatars/rachel.jpg", // ✅ new
   },
 ];
 
