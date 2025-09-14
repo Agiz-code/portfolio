@@ -1,5 +1,5 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
+/* eslint-disable react-hooks/exhaustive-deps */
 
 import { cn } from "@/lib/utils";
 import { useEffect, useRef, useState } from "react";
