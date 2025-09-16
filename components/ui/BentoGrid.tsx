@@ -1,5 +1,3 @@
-// components/ui/BentoGrid.tsx
-
 "use client";
 /* eslint-disable react-hooks/exhaustive-deps */
 
@@ -13,9 +11,11 @@ import GridGlobe from "./GridGlobe";
 import animationData from "@/data/confetti.json";
 import MagicButton from "../MagicButton";
 import dynamic from "next/dynamic";
-import Lottie from "lottie-react";
 
-// Dynamically import the BackgroundGradientAnimation, handling its named export.
+// Dynamically import Lottie, disabling server-side rendering
+const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
+
+// Dynamically import BackgroundGradientAnimation, handling its named export and disabling SSR
 const BackgroundGradientAnimation = dynamic(
   () => import("./GradientBg").then((mod) => mod.BackgroundGradientAnimation),
   { ssr: false }
